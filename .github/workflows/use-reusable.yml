@@ -62,7 +62,6 @@ jobs:
         id: build-website
         run: npm run build
       - name: Upload artifacts
-        id: upload-artifact
         uses: actions/upload-artifact@v3
         with:
           name: dist-files
@@ -71,7 +70,15 @@ jobs:
     needs: build
     uses: ./.github/workflows/reusable.yaml
     with:
-      artifact-name: ${{ needs.build.steps.upload-artifact.with.name }}
+      artifact-name: dist-files
+    secrets:
+      github-token: ${{ secrets.gh-token}}
+  print-deploy-result:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Deploy Output
+        run: echo "${{ needs.deploy.outputs.result }}"
   report:
     needs: [lint, deploy]
     if: failure()
